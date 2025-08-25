@@ -82,13 +82,10 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
-# 상단 이모지 장식
-st.markdown("## 📚 ⭐ 🎓 🌟 💫 🎊 📖 ✨")
-
 # 오늘의 명언 (상단)
 st.markdown(f'''
 <div class="quote-box">
-    <h3 style="color: white; margin-bottom: 15px;">📜 오늘의 명언</h3>
+    <h3 style="color: white; margin-bottom: 15px;">💭 오늘의 명언</h3>
     <p style="font-size: 18px; font-style: italic; color: white; line-height: 1.6; margin: 0;">
         {today_quote}
     </p>
@@ -102,7 +99,7 @@ st.markdown(f'''
     <div style="font-size: 120px; font-weight: bold; color: #FFD700; text-shadow: 3px 3px 8px rgba(0,0,0,0.6); margin: 30px 0; line-height: 1;">
         D-{days_remaining}
     </div>
-    <p style="font-size: 24px; color: white; margin: 0;">📅 2026년 2월 10일</p>
+    <p style="font-size: 24px; color: white; margin: 0;">2026년 2월 10일</p>
 </div>
 ''', unsafe_allow_html=True)
 
@@ -112,18 +109,15 @@ weeks_remaining = days_remaining // 7
 
 st.markdown(f'''
 <div class="encouragement-box">
-    <h3 style="color: white; margin-bottom: 20px;">🌈 응원 메시지</h3>
+    <h3 style="color: white; margin-bottom: 20px;">🎓 졸업까지</h3>
     <p style="font-size: 18px; color: white; line-height: 1.6; margin-bottom: 15px;">
-        초등학교 마지막 학기, 소중한 추억을 많이 만들어가세요! 🎒✨
+        초등학교 마지막 학기, 소중한 추억을 만들어가세요!
     </p>
     <p style="font-size: 16px; color: white; line-height: 1.5;">
-        📊 <strong>졸업까지 남은 시간</strong><br>
-        🗓️ 약 {months_remaining}개월 {days_remaining % 30}일<br>
-        📚 약 {weeks_remaining}주<br>
-        ⏰ 총 {days_remaining}일
+        약 {months_remaining}개월 {days_remaining % 30}일 | 약 {weeks_remaining}주 | 총 {days_remaining}일
     </p>
     <p style="font-size: 16px; color: white; margin-top: 20px;">
-        💪 매일매일 조금씩 성장하는 여러분을 응원합니다! 🌟
+        매일 조금씩 성장하는 여러분을 응원해요! 💪
     </p>
 </div>
 ''', unsafe_allow_html=True)
@@ -134,44 +128,44 @@ col1, col2, col3 = st.columns(3)
 with col1:
     st.markdown("### 📖 오늘의 목표")
     daily_goals = [
-        "📝 숙제 성실히 완료하기",
-        "📚 독서 30분 이상",
-        "🤝 친구들과 좋은 추억",
-        "💭 새로운 것 하나 배우기",
-        "😊 감사한 마음 갖기",
-        "🏃‍♀️ 건강한 생활 습관",
-        "🎨 창의적인 활동 해보기"
+        "숙제 성실히 완료하기",
+        "독서 30분 이상 하기",
+        "친구들과 좋은 추억 만들기",
+        "새로운 것 하나 배우기",
+        "감사한 마음 갖기",
+        "건강한 생활 습관 유지하기",
+        "창의적인 활동 해보기"
     ]
     goal_index = today.timetuple().tm_yday % len(daily_goals)
     st.write(daily_goals[goal_index])
 
 with col2:
-    st.markdown("### 🎯 학습 팁")
+    st.markdown("### 💡 학습 팁")
     tips = [
-        "🧠 집중할 때는 25분씩!",
-        "📝 필기는 색깔별로!",
-        "🤔 모르는 것은 바로 질문!",
-        "📊 계획표 만들어보기",
-        "🔄 복습이 진짜 공부!",
-        "👥 친구와 함께 공부하기",
-        "🎵 즐겁게 학습하기"
+        "집중할 때는 25분씩 공부하기",
+        "필기는 색깔별로 정리하기",
+        "모르는 것은 바로 질문하기",
+        "계획표 만들어보기",
+        "복습이 진짜 공부!",
+        "친구와 함께 공부하기",
+        "즐겁게 학습하기"
     ]
     tip_index = (today.timetuple().tm_yday + 1) % len(tips)
     st.write(tips[tip_index])
 
 with col3:
-    st.markdown("### 🌟 오늘의 기분")
-    st.write("😊 화이팅!")
+    st.markdown("### ⭐ 응원")
+    st.write("오늘도 화이팅!")
 
 # 하단 장식
 st.markdown("---")
 st.markdown("""
 <div style="text-align: center; padding: 20px;">
     <p style="font-size: 18px; color: white;">
-        💖 <strong>수유초등학교 6학년 여러분의 꿈을 응원합니다!</strong> 🌟
+        <strong>수유초등학교 6학년 여러분의 꿈을 응원합니다!</strong> 🌟
     </p>
     <p style="font-size: 14px; color: rgba(255,255,255,0.8); margin-top: 10px;">
-        🎓 졸업까지 힘내세요! 📚✨
+        졸업까지 힘내세요!
     </p>
 </div>
 """, unsafe_allow_html=True)
