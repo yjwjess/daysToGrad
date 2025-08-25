@@ -162,6 +162,16 @@ with col2:
 with col3:
     st.markdown("### 🌟 오늘의 기분")
     st.write("😊 화이팅!")
-    
-    # 진행률 표시
-    total_school
+
+# 하단 장식
+st.markdown("---")
+st.markdown("""
+<div style="text-align: center; padding: 20px;">
+    <p style="font-size: 18px; color: white;">
+        💖 <strong>수유초등학교 6학년 여러분의 꿈을 응원합니다!</strong> 🌟
+    </p>
+    <p style="font-size: 14px; color: rgba(255,255,255,0.8); margin-top: 10px;">
+        🎓 졸업까지 힘내세요! 📚✨
+    </p>
+</div>
+""", unsafe_allow_html=True)
