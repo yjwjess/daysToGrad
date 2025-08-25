@@ -1,6 +1,8 @@
 import streamlit as st
 from datetime import datetime, date
 import time
+import requests
+import json
 
 # 페이지 설정
 st.set_page_config(
@@ -28,13 +30,31 @@ quotes = [
     "\"인생은 자전거 타기와 같다. 균형을 잡으려면 계속 움직여야 한다.\" - 알버트 아인슈타인"
 ]
 
+# 현재 날짜를 외부 API에서 가져오기
+@st.cache_data(ttl=3600)  # 1시간마다 캐시 갱신
+def get_current_date():
+    try:
+        # WorldTimeAPI에서 서울 시간 가져오기
+        response = requests.get("http://worldtimeapi.org/api/timezone/Asia/Seoul", timeout=10)
+        if response.status_code == 200:
+            data = response.json()
+            datetime_str = data['datetime']
+            # ISO 형식에서 날짜 추출
+            current_datetime = datetime.fromisoformat(datetime_str.replace('Z', '+00:00'))
+            return current_datetime.date()
+        else:
+            # API 실패 시 로컬 날짜 사용
+            return date.today()
+    except:
+        # 네트워크 오류 시 로컬 날짜 사용
+        return date.today()
+
 # 현재 날짜와 시간으로 D-Day 실시간 계산
 def calculate_dday():
-    now = datetime.now()
-    today = now.date()
+    current_date = get_current_date()
     graduation_date = date(2026, 2, 10)
-    days_remaining = (graduation_date - today).days
-    return days_remaining, today
+    days_remaining = (graduation_date - current_date).days
+    return days_remaining, current_date
 
 # D-Day 계산
 days_remaining, current_date = calculate_dday()
@@ -135,8 +155,13 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # 실시간 업데이트 시간 표시
-current_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-st.markdown(f'<div class="update-time">업데이트: {current_time}</div>', unsafe_allow_html=True)
+update_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+st.markdown(f'''
+<div class="update-time">
+    업데이트: {update_time}<br>
+    <small>기준: 서울시간</small>
+</div>
+''', unsafe_allow_html=True)
 
 # 타이틀
 st.markdown('<h1 style="text-align: center; color: white; font-size: 48px; margin-bottom: 30px;">🎓 수유초 졸업 D-Day</h1>', unsafe_allow_html=True)
@@ -165,10 +190,13 @@ st.markdown(f'''
 <div class="info-box">
     <h3 style="margin-bottom: 15px;">📅 오늘 날짜</h3>
     <p style="font-size: 24px; margin: 0; font-weight: 700;">
-        {current_date.strftime("%Y년 %m월 %d일")}
+        {current_date.strftime("%Y년 %m월 %d일")} ({current_date.strftime("%A")})
     </p>
     <p style="font-size: 16px; margin-top: 10px;">
-        졸업까지 {days_remaining}일 남았어요!
+        졸업까지 <strong>{days_remaining}일</strong> 남았어요!
+    </p>
+    <p style="font-size: 12px; margin-top: 5px; opacity: 0.7;">
+        * 서울 기준시간으로 계산됩니다
     </p>
 </div>
 ''', unsafe_allow_html=True)
