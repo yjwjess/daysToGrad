@@ -1,12 +1,10 @@
 import streamlit as st
-from datetime import datetime, date
-import time
-import requests
-import json
+from datetime import datetime, date, timedelta
+import pytz
 
 # 페이지 설정
 st.set_page_config(
-    page_title="수유초 졸업식 D-Day 학습코치",
+    page_title="수유초 졸업식 D-Day",
     page_icon="🎓",
     layout="centered"
 )
@@ -30,48 +28,42 @@ quotes = [
     "\"인생은 자전거 타기와 같다. 균형을 잡으려면 계속 움직여야 한다.\" - 알버트 아인슈타인"
 ]
 
-# 현재 날짜를 외부 API에서 가져오기
-@st.cache_data(ttl=3600)  # 1시간마다 캐시 갱신
-def get_current_date():
+# 서울 시간 기준으로 현재 날짜 가져오기
+def get_korean_date():
     try:
-        # WorldTimeAPI에서 서울 시간 가져오기
-        response = requests.get("http://worldtimeapi.org/api/timezone/Asia/Seoul", timeout=10)
-        if response.status_code == 200:
-            data = response.json()
-            datetime_str = data['datetime']
-            # ISO 형식에서 날짜 추출
-            current_datetime = datetime.fromisoformat(datetime_str.replace('Z', '+00:00'))
-            return current_datetime.date()
-        else:
-            # API 실패 시 로컬 날짜 사용
-            return date.today()
+        # 서울 시간대 설정
+        kst = pytz.timezone('Asia/Seoul')
+        korean_time = datetime.now(kst)
+        return korean_time.date()
     except:
-        # 네트워크 오류 시 로컬 날짜 사용
-        return date.today()
+        # pytz가 없을 경우 UTC+9 수동 계산
+        utc_now = datetime.utcnow()
+        korean_time = utc_now + timedelta(hours=9)
+        return korean_time.date()
 
-# 현재 날짜와 시간으로 D-Day 실시간 계산
+# D-Day 계산
 def calculate_dday():
-    current_date = get_current_date()
+    current_date = get_korean_date()
     graduation_date = date(2026, 2, 10)
     days_remaining = (graduation_date - current_date).days
     return days_remaining, current_date
 
-# D-Day 계산
+# 계산 실행
 days_remaining, current_date = calculate_dday()
 
-# 오늘의 명언 선택 (날짜 기반으로 일관성 유지)
+# 오늘의 명언 선택
 quote_index = current_date.timetuple().tm_yday % len(quotes)
 today_quote = quotes[quote_index]
 
-# CSS 스타일링 (블랙 앤 화이트 컨셉)
+# Apple 스타일 CSS
 st.markdown("""
 <style>
-    @import url('https://fonts.googleapis.com/css2?family=Comic+Neue:wght@400;700&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=SF+Pro+Display:wght@300;400;500;600;700&display=swap');
     
     .stApp {
-        background-color: #000000;
-        color: #ffffff;
-        font-family: 'Comic Neue', cursive;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', sans-serif;
+        color: #1d1d1f;
     }
     
     .main .block-container {
@@ -80,128 +72,157 @@ st.markdown("""
         max-width: 800px;
     }
     
-    .quote-box {
-        background-color: #ffffff;
-        color: #000000;
+    .ios-card {
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
         border-radius: 20px;
-        padding: 25px;
+        padding: 30px;
         margin: 20px 0;
-        border: 3px solid #000000;
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
         text-align: center;
-        box-shadow: 0 8px 16px rgba(255, 255, 255, 0.1);
     }
     
-    .dday-box {
-        background-color: #000000;
-        color: #ffffff;
-        border: 5px solid #ffffff;
+    .dday-card {
+        background: rgba(255, 255, 255, 0.98);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
         border-radius: 30px;
-        padding: 50px;
-        margin: 40px 0;
-        text-align: center;
-        box-shadow: 0 0 30px rgba(255, 255, 255, 0.3);
-    }
-    
-    .info-box {
-        background-color: #ffffff;
-        color: #000000;
-        border-radius: 15px;
-        padding: 20px;
-        margin: 20px 0;
-        border: 2px solid #000000;
+        padding: 50px 30px;
+        margin: 30px 0;
+        border: 1px solid rgba(255, 255, 255, 0.4);
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
         text-align: center;
     }
     
-    .section-box {
-        background-color: #000000;
-        color: #ffffff;
-        border: 2px solid #ffffff;
-        border-radius: 15px;
+    .small-card {
+        background: rgba(255, 255, 255, 0.9);
+        backdrop-filter: blur(15px);
+        border-radius: 16px;
         padding: 20px;
         margin: 15px 0;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
         text-align: center;
-    }
-    
-    h1, h2, h3 {
-        font-family: 'Comic Neue', cursive !important;
-        font-weight: 700 !important;
-    }
-    
-    p, div {
-        font-family: 'Comic Neue', cursive !important;
     }
     
     .big-number {
-        font-size: 150px !important;
-        font-weight: 900 !important;
-        font-family: 'Comic Neue', cursive !important;
-        text-shadow: 3px 3px 0px #666666;
-        margin: 30px 0 !important;
-        line-height: 1 !important;
+        font-size: 140px;
+        font-weight: 700;
+        color: #007AFF;
+        margin: 20px 0;
+        line-height: 0.9;
+        text-shadow: 0 2px 4px rgba(0, 122, 255, 0.2);
     }
     
-    .update-time {
+    .title-text {
+        font-size: 32px;
+        font-weight: 600;
+        color: #1d1d1f;
+        margin-bottom: 10px;
+    }
+    
+    .subtitle-text {
+        font-size: 24px;
+        font-weight: 500;
+        color: #1d1d1f;
+        margin: 10px 0;
+    }
+    
+    .body-text {
+        font-size: 17px;
+        font-weight: 400;
+        color: #424245;
+        line-height: 1.5;
+    }
+    
+    .quote-text {
+        font-size: 18px;
+        font-weight: 400;
+        color: #1d1d1f;
+        line-height: 1.6;
+        font-style: italic;
+    }
+    
+    .section-title {
+        font-size: 20px;
+        font-weight: 600;
+        color: #1d1d1f;
+        margin-bottom: 12px;
+    }
+    
+    .status-bar {
         position: fixed;
         top: 10px;
-        right: 10px;
-        background-color: rgba(255, 255, 255, 0.9);
-        color: #000000;
-        padding: 8px 12px;
-        border-radius: 10px;
-        font-size: 12px;
-        font-family: 'Comic Neue', cursive;
+        right: 15px;
+        background: rgba(0, 0, 0, 0.8);
+        color: white;
+        padding: 8px 16px;
+        border-radius: 20px;
+        font-size: 13px;
+        font-weight: 500;
+        backdrop-filter: blur(10px);
+    }
+    
+    .refresh-button {
+        background: #007AFF;
+        color: white;
+        border: none;
+        border-radius: 12px;
+        padding: 12px 24px;
+        font-size: 16px;
+        font-weight: 500;
+        cursor: pointer;
+        margin-top: 20px;
+    }
+    
+    h1, h2, h3, h4, h5, h6 {
+        font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif !important;
     }
 </style>
 """, unsafe_allow_html=True)
 
-# 실시간 업데이트 시간 표시
-update_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+# 상태바 (iOS 스타일)
+current_time = datetime.now().strftime("%H:%M")
+st.markdown(f'<div class="status-bar">🕐 {current_time} | 서울</div>', unsafe_allow_html=True)
+
+# 메인 타이틀
+st.markdown('<div style="text-align: center; padding: 20px 0;"><h1 style="color: white; font-size: 36px; font-weight: 300; margin: 0;">🎓 수유초 졸업 카운트다운</h1></div>', unsafe_allow_html=True)
+
+# 오늘의 명언
 st.markdown(f'''
-<div class="update-time">
-    업데이트: {update_time}<br>
-    <small>기준: 서울시간</small>
+<div class="ios-card">
+    <div class="section-title">💭 오늘의 명언</div>
+    <p class="quote-text">{today_quote}</p>
 </div>
 ''', unsafe_allow_html=True)
 
-# 타이틀
-st.markdown('<h1 style="text-align: center; color: white; font-size: 48px; margin-bottom: 30px;">🎓 수유초 졸업 D-Day</h1>', unsafe_allow_html=True)
-
-# 오늘의 명언 (상단)
+# D-Day 메인 카드
 st.markdown(f'''
-<div class="quote-box">
-    <h3 style="margin-bottom: 15px; font-size: 20px;">💭 오늘의 명언</h3>
-    <p style="font-size: 18px; font-style: italic; line-height: 1.6; margin: 0; font-weight: 400;">
-        {today_quote}
-    </p>
-</div>
-''', unsafe_allow_html=True)
-
-# D-Day 메인 섹션 (중앙)
-st.markdown(f'''
-<div class="dday-box">
-    <h2 style="font-size: 36px; margin-bottom: 20px; font-weight: 700;">수유초등학교 졸업식</h2>
+<div class="dday-card">
+    <div class="title-text">수유초등학교 졸업식</div>
     <div class="big-number">D-{days_remaining}</div>
-    <p style="font-size: 28px; margin: 0; font-weight: 700;">2026년 2월 10일</p>
+    <div class="subtitle-text">2026년 2월 10일</div>
 </div>
 ''', unsafe_allow_html=True)
 
 # 현재 날짜 정보
+weekday_korean = {
+    'Monday': '월요일', 'Tuesday': '화요일', 'Wednesday': '수요일',
+    'Thursday': '목요일', 'Friday': '금요일', 'Saturday': '토요일', 'Sunday': '일요일'
+}
+korean_weekday = weekday_korean.get(current_date.strftime('%A'), current_date.strftime('%A'))
+
 st.markdown(f'''
-<div class="info-box">
-    <h3 style="margin-bottom: 15px;">📅 오늘 날짜</h3>
-    <p style="font-size: 24px; margin: 0; font-weight: 700;">
-        {current_date.strftime("%Y년 %m월 %d일")} ({current_date.strftime("%A")})
-    </p>
-    <p style="font-size: 16px; margin-top: 10px;">
-        졸업까지 <strong>{days_remaining}일</strong> 남았어요!
-    </p>
-    <p style="font-size: 12px; margin-top: 5px; opacity: 0.7;">
-        * 서울 기준시간으로 계산됩니다
-    </p>
+<div class="ios-card">
+    <div class="section-title">📅 오늘</div>
+    <div class="subtitle-text">{current_date.strftime("%Y년 %m월 %d일")} {korean_weekday}</div>
+    <p class="body-text">졸업까지 <strong>{days_remaining}일</strong> 남았습니다</p>
 </div>
 ''', unsafe_allow_html=True)
 
-# 하단 정보 섹션
+# 정보 카드들
 col1, col2 = st.columns(2)
 
 with col1:
@@ -217,11 +238,9 @@ with col1:
     goal_index = current_date.timetuple().tm_yday % len(daily_goals)
     
     st.markdown(f'''
-    <div class="section-box">
-        <h3 style="margin-bottom: 15px;">📖 오늘의 목표</h3>
-        <p style="font-size: 18px; font-weight: 400;">
-            {daily_goals[goal_index]}
-        </p>
+    <div class="small-card">
+        <div class="section-title">📖 오늘의 목표</div>
+        <p class="body-text">{daily_goals[goal_index]}</p>
     </div>
     ''', unsafe_allow_html=True)
 
@@ -238,11 +257,9 @@ with col2:
     tip_index = (current_date.timetuple().tm_yday + 1) % len(tips)
     
     st.markdown(f'''
-    <div class="section-box">
-        <h3 style="margin-bottom: 15px;">💡 학습 팁</h3>
-        <p style="font-size: 18px; font-weight: 400;">
-            {tips[tip_index]}
-        </p>
+    <div class="small-card">
+        <div class="section-title">💡 학습 팁</div>
+        <p class="body-text">{tips[tip_index]}</p>
     </div>
     ''', unsafe_allow_html=True)
 
@@ -251,32 +268,40 @@ months_remaining = days_remaining // 30
 weeks_remaining = days_remaining // 7
 
 st.markdown(f'''
-<div class="info-box">
-    <h3 style="margin-bottom: 15px;">⭐ 응원 메시지</h3>
-    <p style="font-size: 20px; margin-bottom: 15px; font-weight: 700;">
-        오늘도 화이팅! 💪
-    </p>
-    <p style="font-size: 16px; line-height: 1.5;">
+<div class="ios-card">
+    <div class="section-title">⭐ 응원 메시지</div>
+    <div class="subtitle-text" style="color: #007AFF;">오늘도 화이팅! 💪</div>
+    <p class="body-text">
         약 {months_remaining}개월 {days_remaining % 30}일 | 약 {weeks_remaining}주 남았어요<br>
         매일 조금씩 성장하는 여러분을 응원합니다!
     </p>
 </div>
 ''', unsafe_allow_html=True)
 
-# 하단 메시지
+# 하단 정보
 st.markdown("---")
+col1, col2 = st.columns([3, 1])
+
+with col1:
+    st.markdown(f"""
+    <div style="color: white; font-size: 15px; padding: 10px 0;">
+        📍 기준 날짜: {current_date.strftime('%Y년 %m월 %d일')} (한국 시간)<br>
+        🎯 목표: 2026년 2월 10일 수유초등학교 졸업식
+    </div>
+    """, unsafe_allow_html=True)
+
+with col2:
+    if st.button("🔄 새로고침", key="refresh"):
+        st.rerun()
+
+# 푸터
 st.markdown("""
-<div style="text-align: center; padding: 20px; color: white;">
-    <p style="font-size: 20px; font-weight: 700;">
+<div style="text-align: center; padding: 30px 0; color: white;">
+    <p style="font-size: 20px; font-weight: 500; margin-bottom: 10px;">
         수유초등학교 6학년 여러분의 꿈을 응원합니다! 🌟
     </p>
-    <p style="font-size: 14px; margin-top: 10px; opacity: 0.8;">
-        졸업까지 힘내세요!
+    <p style="font-size: 14px; opacity: 0.8;">
+        매일 성장하는 여러분이 자랑스러워요
     </p>
 </div>
 """, unsafe_allow_html=True)
-
-# 자동 새로고침 (1분마다)
-time.sleep(0.1)  # 페이지 로딩 완료 대기
-if st.button("🔄 새로고침", key="refresh_button"):
-    st.rerun()
